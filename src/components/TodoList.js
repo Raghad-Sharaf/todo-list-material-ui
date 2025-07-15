@@ -10,15 +10,59 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-// Components Call
+// Components
 import Task from "./Task";
 
 // Others
+import { v4 as uuidv4 } from 'uuid';
+import { useState } from "react";
 
-export default function SimpleContainer() {
+const initialTasks = [
+  {
+    id: uuidv4(),
+    title: 'task #1',
+    details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    isCompleted: false
+  },
+   {
+    id: uuidv4(),
+    title: 'task #2',
+    details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    isCompleted: false
+  },
+   {
+    id: uuidv4(),
+    title: 'task #3',
+    details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    isCompleted: false
+  }
+]
+
+export default function TodoList() {
+  const [tasks, setTasks] = useState(initialTasks);
+  const [taskInput, setTaskInput] = useState("");
+  
+  const tasksList = tasks.map((task) => {
+    return <Task key={task.id} title={task.title} details={task.details} />
+  })
+
+  function handleAddTask () {
+    const newTask = {
+      id: uuidv4(),
+      title: taskInput,
+      details: "",
+      isCompleted: false
+    }
+
+    setTasks([...tasks, newTask]);
+
+    // Clear text field after addition
+    setTaskInput("")
+  }
+
   return (
     <>
-      <Container maxWidth="sm">
+      <Container maxWidth="sm" sx={{ padding: 3 }}>
         <Card sx={{ minWidth: 275, borderRadius: 5 }}>
           <CardContent
             sx={{
@@ -244,7 +288,7 @@ export default function SimpleContainer() {
             </ToggleButtonGroup>
 
             {/* Tasks */}
-            <Task />
+            {tasksList}
 
             {/* Input + Add Task Button */}
             <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -255,6 +299,8 @@ export default function SimpleContainer() {
                 flexDirection="column"
               >
                 <TextField
+                  value={taskInput}
+                  onChange={(e) => {setTaskInput(e.target.value)}}
                   id="outlined-basic"
                   label="What needs to be done?"
                   variant="outlined"
@@ -272,6 +318,7 @@ export default function SimpleContainer() {
                 alignItems="center"
               >
                 <Button
+                  onClick={() => {handleAddTask()}}
                   variant="contained"
                   sx={{
                     width: "100%",
@@ -284,7 +331,7 @@ export default function SimpleContainer() {
                       'Inter, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif',
                   }}
                 >
-                  Add
+                  Add Task
                 </Button>
               </Grid>
             </Grid>
