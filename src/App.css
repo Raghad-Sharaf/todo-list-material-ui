@@ -1,7 +1,11 @@
-body {
-  background: linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);
+html, body, #root {
+  height: 100%;
   margin: 0;
-  /* font-family: Inter, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif !important; */
+  padding: 0;
+  background: linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);
+  font-family: Inter, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif !important;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .App {

@@ -44,7 +44,7 @@ export default function TodoList() {
 
   return (
     <>
-      <Container maxWidth="sm" sx={{ padding: 3 }}>
+      <Container maxWidth="sm" sx={{ padding: 3, margin: 0 }}>
         <Card sx={{ minWidth: 275, borderRadius: 5 }}>
           <CardContent
             sx={{
