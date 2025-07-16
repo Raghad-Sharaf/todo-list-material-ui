@@ -2,6 +2,33 @@ import "./App.css";
 import TodoList from "./components/TodoList";
 import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@mui/material/styles";
+import { tasksContext } from "./contexts/tasksContext";
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+
+const initialTasks = [
+  {
+    id: uuidv4(),
+    title: "task #1",
+    details:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    isCompleted: false,
+  },
+  {
+    id: uuidv4(),
+    title: "task #2",
+    details:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    isCompleted: false,
+  },
+  {
+    id: uuidv4(),
+    title: "task #3",
+    details:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    isCompleted: false,
+  },
+];
 
 const theme = createTheme({
   palette: {
@@ -39,11 +66,14 @@ const theme = createTheme({
 });
 
 function App() {
+  const [tasks, setTasks] = useState(initialTasks);
   return (
     <>
       <ThemeProvider theme={theme}>
         <div className="App">
-          <TodoList />
+          <tasksContext.Provider value={{ tasks, setTasks }}>
+            <TodoList />
+          </tasksContext.Provider>
         </div>
       </ThemeProvider>
     </>

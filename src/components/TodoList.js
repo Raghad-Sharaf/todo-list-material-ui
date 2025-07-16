@@ -12,52 +12,34 @@ import Button from "@mui/material/Button";
 
 // Components
 import Task from "./Task";
+import { tasksContext } from "../contexts/tasksContext";
 
 // Others
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
-
-const initialTasks = [
-  {
-    id: uuidv4(),
-    title: 'task #1',
-    details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    isCompleted: false
-  },
-   {
-    id: uuidv4(),
-    title: 'task #2',
-    details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    isCompleted: false
-  },
-   {
-    id: uuidv4(),
-    title: 'task #3',
-    details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    isCompleted: false
-  }
-]
+import { useContext } from "react";
 
 export default function TodoList() {
-  const [tasks, setTasks] = useState(initialTasks);
-  const [taskInput, setTaskInput] = useState("");
-  
-  const tasksList = tasks.map((task) => {
-    return <Task key={task.id} title={task.title} details={task.details} />
-  })
+  const { tasks, setTasks } = useContext(tasksContext);
 
-  function handleAddTask () {
+  const [taskInput, setTaskInput] = useState("");
+
+  const tasksList = tasks.map((task) => {
+    return <Task key={task.id} task={task} />;
+  });
+
+  function handleAddTask() {
     const newTask = {
       id: uuidv4(),
       title: taskInput,
       details: "",
-      isCompleted: false
-    }
+      isCompleted: false,
+    };
 
     setTasks([...tasks, newTask]);
 
     // Clear text field after addition
-    setTaskInput("")
+    setTaskInput("");
   }
 
   return (
@@ -300,7 +282,9 @@ export default function TodoList() {
               >
                 <TextField
                   value={taskInput}
-                  onChange={(e) => {setTaskInput(e.target.value)}}
+                  onChange={(e) => {
+                    setTaskInput(e.target.value);
+                  }}
                   id="outlined-basic"
                   label="What needs to be done?"
                   variant="outlined"
@@ -318,7 +302,9 @@ export default function TodoList() {
                 alignItems="center"
               >
                 <Button
-                  onClick={() => {handleAddTask()}}
+                  onClick={() => {
+                    handleAddTask();
+                  }}
                   variant="contained"
                   sx={{
                     width: "100%",

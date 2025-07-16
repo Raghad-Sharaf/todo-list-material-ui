@@ -7,7 +7,25 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 
-export default function Task({title, details}){
+// Components
+import { tasksContext } from "../contexts/tasksContext";
+
+// Others
+import { useContext } from "react";
+
+export default function Task({ task }) {
+  const { tasks, setTasks } = useContext(tasksContext);
+
+  function handleCheckedButton() {
+    const updatedTasks = tasks.map((t) => {
+      if (t.id === task.id) {
+        t.isCompleted = !t.isCompleted;
+      }
+      return t;
+    });
+
+    setTasks(updatedTasks);
+  }
   return (
     <>
       <Card
@@ -18,7 +36,7 @@ export default function Task({title, details}){
           border: "none",
           boxShadow: "0 4px 12px rgba(102, 126, 234, 0.3)",
           backgroundColor: "background.default",
-          mb: 2
+          mb: 2,
         }}
       >
         <CardContent sx={{ padding: "16px 16px 16px 24px!important" }}>
@@ -33,7 +51,7 @@ export default function Task({title, details}){
                 variant="body1"
                 sx={{ color: "secondary.main", mb: 1, textAlign: "left" }}
               >
-                {title}
+                {task.title}
               </Typography>
               <Typography
                 variant="body2"
@@ -45,7 +63,7 @@ export default function Task({title, details}){
                     'Inter, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif',
                 }}
               >
-                {details}
+                {task.details}
               </Typography>
             </Grid>
             {/* Action Buttons */}
@@ -55,7 +73,16 @@ export default function Task({title, details}){
               justifyContent="space-around"
               alignItems="center"
             >
-              <IconButton className="action-btn" sx={{ color: "success.main" }}>
+              <IconButton
+                onClick={() => {
+                  handleCheckedButton();
+                }}
+                className="action-btn"
+                sx={{
+                  color: task.isCompleted ? "white" : "success.main",
+                  backgroundColor: task.isCompleted ? "success.main" : "white",
+                }}
+              >
                 <CheckRoundedIcon />
               </IconButton>
               <IconButton className="action-btn" sx={{ color: "primary.main" }}>
