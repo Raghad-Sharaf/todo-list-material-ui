@@ -14,6 +14,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import { Box } from "@mui/material";
+import TextField from '@mui/material/TextField';
 
 // Components
 import { tasksContext } from "../contexts/tasksContext";
@@ -23,7 +24,9 @@ import { useContext, useState } from "react";
 
 export default function Task({ task }) {
   const { tasks, setTasks } = useContext(tasksContext);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [updatedTask, setUpdatedTask] = useState({title: task.title, details: task.details});
 
   // Event Handlers
   function handleCheckedButton() {
@@ -41,7 +44,7 @@ export default function Task({ task }) {
     setShowDeleteDialog(true);
   }
 
-  function handleClose() {
+  function handleDeleteDialogClose() {
     setShowDeleteDialog(false);
   }
 
@@ -53,12 +56,143 @@ export default function Task({ task }) {
     setTasks(updatedTasks);
   }
 
+  function handleUpdateDialogClose() {
+    setShowUpdateDialog(false);
+  }
+
+  function handleUpdateDialog() {
+    setShowUpdateDialog(true);
+  }
+
+  function handleUpdateConfirm() {
+    const updatedTasks = tasks.map((t) => {
+      if(t.id === task.id) {
+        return {...t, title: updatedTask.title, details: updatedTask.details};
+      } else {
+        return t;
+      }
+    })
+
+    setTasks(updatedTasks);
+    setShowUpdateDialog(false);
+  }
+
   return (
     <>
+      {/* Update Dialog */}
+      <Dialog
+        open={showUpdateDialog}
+        onClose={handleUpdateDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: 5,
+              background: "background.paper",
+              backdropFilter: "blur(20px)",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            },
+          },
+          backdrop: {
+            sx: {
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+            },
+          },
+        }}
+      >
+        <DialogTitle
+          variant="h5"
+          id="alert-dialog-title"
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: 600,
+            color: "primary.main",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            pt: 3,
+          }}
+        >
+          Edit Task
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ display:'flex', flexDirection:'column', gap: '0.25em', color: "secondary.main" }}
+          >
+            <TextField
+              value={updatedTask.title}
+              onChange={(e) => {setUpdatedTask({...updatedTask, title: e.target.value})}}
+              autoFocus
+              required
+              margin="dense"
+              id="title"
+              name="title"
+              label="Edit Title"
+              type="text"
+              fullWidth
+              variant="outlined"
+              sx={{"& .MuiOutlinedInput-root": {
+                      borderRadius: 3,
+                    }, borderColor: 'primary.main'}}
+            />
+            <TextField
+              value={updatedTask.details}
+              onChange={(e) => {setUpdatedTask({...updatedTask, details: e.target.value})}}
+              autoFocus
+              margin="dense"
+              id="details"
+              name="details"
+              label="Edit Details"
+              type="text"
+              fullWidth
+              variant="outlined"
+              sx={{"& .MuiOutlinedInput-root": {
+                      borderRadius: 3,
+                    }, borderColor: 'primary.main'}}
+            />
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button
+            onClick={handleUpdateDialogClose}
+            variant="outlined"
+            sx={{
+              borderRadius: 3,
+              px: 3,
+              fontWeight: 500,
+              textTransform: "none",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleUpdateConfirm}
+            autoFocus
+            variant="contained"
+            sx={{
+              borderRadius: 3,
+              px: 3,
+              fontWeight: 500,
+              textTransform: "none",
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+              background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+              },
+            }}
+          >
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* === Delete Dialog === */}
       {/* Delete Dialog */}
       <Dialog
         open={showDeleteDialog}
-        onClose={handleClose}
+        onClose={handleDeleteDialogClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         maxWidth="sm"
@@ -128,7 +262,7 @@ export default function Task({ task }) {
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 1 }}>
           <Button
-            onClick={handleClose}
+            onClick={handleDeleteDialogClose}
             variant="outlined"
             sx={{
               borderRadius: 3,
@@ -216,7 +350,7 @@ export default function Task({ task }) {
               >
                 <CheckRoundedIcon />
               </IconButton>
-              <IconButton className="action-btn" sx={{ color: "primary.main" }}>
+              <IconButton onClick={handleUpdateDialog} className="action-btn" sx={{ color: "primary.main" }}>
                 <EditRoundedIcon />
               </IconButton>
               <IconButton
