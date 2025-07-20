@@ -14,7 +14,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import { Box } from "@mui/material";
-import TextField from '@mui/material/TextField';
+import TextField from "@mui/material/TextField";
 
 // Components
 import { tasksContext } from "../contexts/tasksContext";
@@ -26,7 +26,10 @@ export default function Task({ task }) {
   const { tasks, setTasks } = useContext(tasksContext);
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [updatedTask, setUpdatedTask] = useState({title: task.title, details: task.details});
+  const [updatedTask, setUpdatedTask] = useState({
+    title: task.title,
+    details: task.details,
+  });
 
   // Event Handlers
   function handleCheckedButton() {
@@ -38,6 +41,7 @@ export default function Task({ task }) {
     });
 
     setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   }
 
   function handleDeleteDialog() {
@@ -54,6 +58,7 @@ export default function Task({ task }) {
     });
 
     setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   }
 
   function handleUpdateDialogClose() {
@@ -66,14 +71,17 @@ export default function Task({ task }) {
 
   function handleUpdateConfirm() {
     const updatedTasks = tasks.map((t) => {
-      if(t.id === task.id) {
-        return {...t, title: updatedTask.title, details: updatedTask.details};
+      if (t.id === task.id) {
+        return { ...t, title: updatedTask.title, details: updatedTask.details };
       } else {
         return t;
       }
-    })
+    });
 
     setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+    // Close update dialog after confirmation
     setShowUpdateDialog(false);
   }
 
@@ -121,11 +129,18 @@ export default function Task({ task }) {
         <DialogContent>
           <DialogContentText
             id="alert-dialog-description"
-            sx={{ display:'flex', flexDirection:'column', gap: '0.25em', color: "secondary.main" }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.25em",
+              color: "secondary.main",
+            }}
           >
             <TextField
               value={updatedTask.title}
-              onChange={(e) => {setUpdatedTask({...updatedTask, title: e.target.value})}}
+              onChange={(e) => {
+                setUpdatedTask({ ...updatedTask, title: e.target.value });
+              }}
               autoFocus
               required
               margin="dense"
@@ -135,13 +150,18 @@ export default function Task({ task }) {
               type="text"
               fullWidth
               variant="outlined"
-              sx={{"& .MuiOutlinedInput-root": {
-                      borderRadius: 3,
-                    }, borderColor: 'primary.main'}}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                },
+                borderColor: "primary.main",
+              }}
             />
             <TextField
               value={updatedTask.details}
-              onChange={(e) => {setUpdatedTask({...updatedTask, details: e.target.value})}}
+              onChange={(e) => {
+                setUpdatedTask({ ...updatedTask, details: e.target.value });
+              }}
               autoFocus
               margin="dense"
               id="details"
@@ -150,9 +170,12 @@ export default function Task({ task }) {
               type="text"
               fullWidth
               variant="outlined"
-              sx={{"& .MuiOutlinedInput-root": {
-                      borderRadius: 3,
-                    }, borderColor: 'primary.main'}}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                },
+                borderColor: "primary.main",
+              }}
             />
           </DialogContentText>
         </DialogContent>
@@ -178,9 +201,9 @@ export default function Task({ task }) {
               px: 3,
               fontWeight: 500,
               textTransform: "none",
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              '&:hover': {
-              background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)",
               },
             }}
           >
@@ -350,7 +373,11 @@ export default function Task({ task }) {
               >
                 <CheckRoundedIcon />
               </IconButton>
-              <IconButton onClick={handleUpdateDialog} className="action-btn" sx={{ color: "primary.main" }}>
+              <IconButton
+                onClick={handleUpdateDialog}
+                className="action-btn"
+                sx={{ color: "primary.main" }}
+              >
                 <EditRoundedIcon />
               </IconButton>
               <IconButton

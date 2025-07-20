@@ -16,8 +16,7 @@ import { tasksContext } from "../contexts/tasksContext";
 
 // Others
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
-import { useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 
 export default function TodoList() {
   const { tasks, setTasks } = useContext(tasksContext);
@@ -28,6 +27,12 @@ export default function TodoList() {
     return <Task key={task.id} task={task} />;
   });
 
+  // Get tasks from local storage when component is loaded for the first time
+  useEffect(() => {
+    const storageTasks = JSON.parse(localStorage.getItem("tasks"));
+    setTasks(storageTasks);
+  }, []);
+
   function handleAddTask() {
     const newTask = {
       id: uuidv4(),
@@ -36,7 +41,11 @@ export default function TodoList() {
       isCompleted: false,
     };
 
-    setTasks([...tasks, newTask]);
+    const updatedTasks = [...tasks, newTask];
+    setTasks(updatedTasks);
+
+    // Save tasks to local storage
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
 
     // Clear text field after addition
     setTaskInput("");
