@@ -49,7 +49,7 @@ export default function TodoList() {
   useEffect(() => {
     const storageTasks = JSON.parse(localStorage.getItem("tasks"));
     setTasks(storageTasks || []);
-  }, []);
+  }, [setTasks]);
 
   function changeTasksDisplayedType(e) {
     setDisplayedTasksType(e.target.value);
