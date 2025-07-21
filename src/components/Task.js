@@ -321,10 +321,15 @@ export default function Task({ task }) {
         sx={{
           minWidth: 275,
           borderRadius: 3,
-          border: "none",
           boxShadow: "0 4px 12px rgba(102, 126, 234, 0.3)",
           backgroundColor: "background.default",
           mb: 2,
+          background: task.isCompleted
+            ? "linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(21, 128, 61, 0.1) 100%)"
+            : "background.default",
+          border: task.isCompleted
+            ? "solid 1px rgba(34, 197, 94, 0.2)"
+            : "solid 1px rgba(102, 126, 234, 0.1)",
         }}
       >
         <CardContent sx={{ padding: "16px 16px 16px 24px!important" }}>
@@ -337,7 +342,13 @@ export default function Task({ task }) {
             >
               <Typography
                 variant="body1"
-                sx={{ color: "secondary.main", mb: 1, textAlign: "left" }}
+                sx={{
+                  color: "secondary.main",
+                  mb: 1,
+                  textAlign: "left",
+                  textDecoration: task.isCompleted ? "line-through" : "none",
+                  opacity: task.isCompleted ? 0.7 : 1,
+                }}
               >
                 {task.title}
               </Typography>

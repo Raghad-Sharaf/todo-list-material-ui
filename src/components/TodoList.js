@@ -247,7 +247,7 @@ export default function TodoList() {
               </Box>
             </Box>
           </CardContent>
-          <CardContent sx={{ padding: 3, backgroundColor: "background.paper" }}>
+          <CardContent sx={{ padding: 3, backgroundColor: "background.paper", maxHeight:'80vh', overflowY:'scroll' }}>
             {/* Toggle Buttons */}
             <ToggleButtonGroup
               value={displayedTasksType}
@@ -367,6 +367,7 @@ export default function TodoList() {
                     fontFamily:
                       'Inter, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif',
                   }}
+                  disabled = {taskInput.trim().length === 0}
                 >
                   Add Task
                 </Button>
