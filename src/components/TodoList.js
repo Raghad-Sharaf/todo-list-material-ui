@@ -20,18 +20,40 @@ import { useState, useContext, useEffect } from "react";
 
 export default function TodoList() {
   const { tasks, setTasks } = useContext(tasksContext);
-
+  const [displayedTasksType, setDisplayedTasksType] = useState("all");
   const [taskInput, setTaskInput] = useState("");
 
-  const tasksList = tasks.map((task) => {
+  // Filtration arrays
+  const completedTasks = tasks.filter((t) => {
+    return t.isCompleted;
+  });
+
+  const inCompleteTasks = tasks.filter((t) => {
+    return !t.isCompleted;
+  });
+
+  let tasksToBeRendered = tasks;
+  if (displayedTasksType === "complete") {
+    tasksToBeRendered = completedTasks;
+  } else if (displayedTasksType === "in-complete") {
+    tasksToBeRendered = inCompleteTasks;
+  } else {
+    tasksToBeRendered = tasks;
+  }
+
+  const tasksList = tasksToBeRendered.map((task) => {
     return <Task key={task.id} task={task} />;
   });
 
   // Get tasks from local storage when component is loaded for the first time
   useEffect(() => {
     const storageTasks = JSON.parse(localStorage.getItem("tasks"));
-    setTasks(storageTasks);
+    setTasks(storageTasks || []);
   }, []);
+
+  function changeTasksDisplayedType(e) {
+    setDisplayedTasksType(e.target.value);
+  }
 
   function handleAddTask() {
     const newTask = {
@@ -228,14 +250,28 @@ export default function TodoList() {
           <CardContent sx={{ padding: 3, backgroundColor: "background.paper" }}>
             {/* Toggle Buttons */}
             <ToggleButtonGroup
-              // value={alignment}
+              value={displayedTasksType}
               exclusive
-              // onChange={handleAlignment}
-              aria-label="text alignment"
-              sx={{ mb: 3 }}
+              onChange={changeTasksDisplayedType}
+              aria-label="text filter"
+              sx={{
+                mb: 3,
+                gap: 2,
+                "& .MuiToggleButtonGroup-grouped": {
+                  borderRadius: "30px !important",
+                  margin: 0,
+                  border: "2px solid rgba(102, 126, 234, 0.3)",
+                  transition: "all 0.2s ease-in-out",
+                },
+                "& .MuiToggleButton-root:not(.Mui-selected):hover": {
+                  transform: "translateY(-2px)",
+                  boxShadow: "rgba(0, 0, 0, 0.1) 0px 10px 15px -3px",
+                  background: "rgba(102, 126, 234, 0.1)",
+                },
+              }}
             >
               <ToggleButton
-                value="left"
+                value="all"
                 aria-label="left aligned"
                 sx={{
                   color: "text.primary",
@@ -244,12 +280,14 @@ export default function TodoList() {
                   fontWeight: 600,
                   cursor: "pointer",
                   border: "2px solid rgba(102, 126, 234, 0.3)",
+                  padding: "8px 30px",
+                  height: "32px",
                 }}
               >
                 All
               </ToggleButton>
               <ToggleButton
-                value="center"
+                value="complete"
                 aria-label="centered"
                 sx={{
                   color: "text.primary",
@@ -258,12 +296,14 @@ export default function TodoList() {
                   fontWeight: 600,
                   cursor: "pointer",
                   border: "2px solid rgba(102, 126, 234, 0.3)",
+                  padding: "8px 30px",
+                  height: "32px",
                 }}
               >
                 Done
               </ToggleButton>
               <ToggleButton
-                value="right"
+                value="in-complete"
                 aria-label="right aligned"
                 sx={{
                   color: "text.primary",
@@ -272,6 +312,8 @@ export default function TodoList() {
                   fontWeight: 600,
                   cursor: "pointer",
                   border: "2px solid rgba(102, 126, 234, 0.3)",
+                  padding: "8px 30px",
+                  height: "32px",
                 }}
               >
                 Not Done Yet

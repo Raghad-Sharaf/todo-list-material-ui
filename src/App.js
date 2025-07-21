@@ -63,6 +63,24 @@ const theme = createTheme({
   shape: {
     borderRadius: 8,
   },
+
+  components: {
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          "&.Mui-selected": {
+            background:
+              "linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);",
+            color: "#fff",
+            border: "none",
+          },
+          "&.Mui-selected:hover": {
+            backgroundColor: "rgba(102, 126, 234, 0.3)",
+          },
+        },
+      },
+    },
+  },
 });
 
 function App() {
