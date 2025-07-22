@@ -16,7 +16,7 @@ import { tasksContext } from "../contexts/tasksContext";
 
 // Others
 import { v4 as uuidv4 } from "uuid";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useMemo } from "react";
 
 export default function TodoList() {
   const { tasks, setTasks } = useContext(tasksContext);
@@ -24,13 +24,17 @@ export default function TodoList() {
   const [taskInput, setTaskInput] = useState("");
 
   // Filtration arrays
-  const completedTasks = tasks.filter((t) => {
-    return t.isCompleted;
-  });
+  const completedTasks = useMemo(() => {
+    return tasks.filter((t) => {
+      return t.isCompleted;
+    });
+  }, [tasks]);
 
-  const inCompleteTasks = tasks.filter((t) => {
-    return !t.isCompleted;
-  });
+  const inCompleteTasks = useMemo(() => {
+    return tasks.filter((t) => {
+      return !t.isCompleted;
+    });
+  }, [tasks]);
 
   let tasksToBeRendered = tasks;
   if (displayedTasksType === "complete") {
@@ -247,7 +251,14 @@ export default function TodoList() {
               </Box>
             </Box>
           </CardContent>
-          <CardContent sx={{ padding: 3, backgroundColor: "background.paper", maxHeight:'80vh', overflowY:'scroll' }}>
+          <CardContent
+            sx={{
+              padding: 3,
+              backgroundColor: "background.paper",
+              maxHeight: "80vh",
+              overflowY: "scroll",
+            }}
+          >
             {/* Toggle Buttons */}
             <ToggleButtonGroup
               value={displayedTasksType}
@@ -367,7 +378,7 @@ export default function TodoList() {
                     fontFamily:
                       'Inter, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif',
                   }}
-                  disabled = {taskInput.trim().length === 0}
+                  disabled={taskInput.trim().length === 0}
                 >
                   Add Task
                 </Button>
