@@ -9,6 +9,12 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 // Components
 import Task from "./Task";
@@ -22,6 +28,9 @@ export default function TodoList() {
   const { tasks, setTasks } = useContext(tasksContext);
   const [displayedTasksType, setDisplayedTasksType] = useState("all");
   const [taskInput, setTaskInput] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+  const [dialogTask, setDialogTask] = useState(null);
 
   // Filtration arrays
   const completedTasks = useMemo(() => {
@@ -46,7 +55,14 @@ export default function TodoList() {
   }
 
   const tasksList = tasksToBeRendered.map((task) => {
-    return <Task key={task.id} task={task} />;
+    return (
+      <Task
+        key={task.id}
+        task={task}
+        showDelete={displayDeleteDialog}
+        showUpdate={displayUpdateDialog}
+      />
+    );
   });
 
   // Get tasks from local storage when component is loaded for the first time
@@ -55,6 +71,7 @@ export default function TodoList() {
     setTasks(storageTasks || []);
   }, [setTasks]);
 
+  // Event Handlers
   function changeTasksDisplayedType(e) {
     setDisplayedTasksType(e.target.value);
   }
@@ -62,7 +79,7 @@ export default function TodoList() {
   function handleAddTask() {
     const newTask = {
       id: uuidv4(),
-      title: taskInput,
+      title: taskInput.trim(),
       details: "",
       isCompleted: false,
     };
@@ -77,8 +94,281 @@ export default function TodoList() {
     setTaskInput("");
   }
 
+  function displayDeleteDialog(task) {
+    setDialogTask(task);
+    setShowDeleteDialog(true);
+  }
+
+  function handleDeleteDialogClose() {
+    setShowDeleteDialog(false);
+  }
+
+  function handleDeleteConfirm() {
+    const updatedTasks = tasks.filter((t) => {
+      return t.id !== dialogTask.id;
+    });
+
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    setShowDeleteDialog(false);
+  }
+
+  function displayUpdateDialog(task) {
+    setDialogTask(task);
+    setShowUpdateDialog(true);
+  }
+
+  function handleUpdateDialogClose() {
+    setShowUpdateDialog(false);
+  }
+
+  function handleUpdateConfirm() {
+    const updatedTasks = tasks.map((t) => {
+      if (t.id === dialogTask.id) {
+        return { ...t, title: dialogTask.title, details: dialogTask.details };
+      } else {
+        return t;
+      }
+    });
+
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+    // Close update dialog after confirmation
+    setShowUpdateDialog(false);
+  }
+
   return (
     <>
+      {/* Delete Dialog */}
+      <Dialog
+        open={showDeleteDialog}
+        onClose={handleDeleteDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: 5,
+              background: "background.paper",
+              backdropFilter: "blur(20px)",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            },
+          },
+          backdrop: {
+            sx: {
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+            },
+          },
+        }}
+      >
+        <DialogTitle
+          variant="h5"
+          id="alert-dialog-title"
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: 600,
+            color: "error.main",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            pt: 3,
+          }}
+        >
+          <WarningRoundedIcon sx={{ fontSize: 32, color: "error.main" }} />
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{ mb: 2, color: "secondary.main" }}
+          >
+            Are you sure you want to delete this task?
+          </DialogContentText>
+          {dialogTask && (
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: 3,
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid rgba(239, 68, 68, 0.2)",
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  fontStyle: "italic",
+                  color: "text.secondary",
+                }}
+              >
+                "{dialogTask.title}"
+              </Typography>
+            </Box>
+          )}
+          <Typography variant="body2" sx={{ mt: 2, color: "text.secondary" }}>
+            This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button
+            onClick={handleDeleteDialogClose}
+            variant="outlined"
+            sx={{
+              borderRadius: 3,
+              px: 3,
+              fontWeight: 500,
+              textTransform: "none",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            autoFocus
+            variant="contained"
+            sx={{
+              borderRadius: 3,
+              px: 3,
+              fontWeight: 500,
+              textTransform: "none",
+              background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+              },
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* === Delete Dialog === */}
+      {/* Update Dialog */}
+      <Dialog
+        open={showUpdateDialog}
+        onClose={handleUpdateDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: 5,
+              background: "background.paper",
+              backdropFilter: "blur(20px)",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+            },
+          },
+          backdrop: {
+            sx: {
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+            },
+          },
+        }}
+      >
+        <DialogTitle
+          variant="h5"
+          id="alert-dialog-title"
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: 600,
+            color: "primary.main",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            pt: 3,
+          }}
+        >
+          Edit Task
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.25em",
+              color: "secondary.main",
+            }}
+          >
+            <TextField
+              value={dialogTask?.title || ""}
+              onChange={(e) => {
+                setDialogTask({ ...dialogTask, title: e.target.value });
+              }}
+              autoFocus
+              required
+              margin="dense"
+              id="title"
+              name="title"
+              label="Edit Title"
+              type="text"
+              fullWidth
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                },
+                borderColor: "primary.main",
+              }}
+            />
+            <TextField
+              value={dialogTask?.details || ""}
+              onChange={(e) => {
+                setDialogTask({ ...dialogTask, details: e.target.value });
+              }}
+              autoFocus
+              margin="dense"
+              id="details"
+              name="details"
+              label="Edit Details"
+              type="text"
+              fullWidth
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                },
+                borderColor: "primary.main",
+              }}
+            />
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 1 }}>
+          <Button
+            onClick={handleUpdateDialogClose}
+            variant="outlined"
+            sx={{
+              borderRadius: 3,
+              px: 3,
+              fontWeight: 500,
+              textTransform: "none",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleUpdateConfirm}
+            autoFocus
+            variant="contained"
+            sx={{
+              borderRadius: 3,
+              px: 3,
+              fontWeight: 500,
+              textTransform: "none",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)",
+              },
+            }}
+          >
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* === Update Dialog === */}
       <Container maxWidth="sm" sx={{ padding: 3, margin: 0 }}>
         <Card sx={{ minWidth: 275, borderRadius: 5 }}>
           <CardContent
