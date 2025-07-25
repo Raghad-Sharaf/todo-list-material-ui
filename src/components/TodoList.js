@@ -19,6 +19,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 // Components
 import Task from "./Task";
 import { tasksContext } from "../contexts/tasksContext";
+import { useToast } from "../contexts/ToastContext";
 
 // Others
 import { v4 as uuidv4 } from "uuid";
@@ -26,6 +27,7 @@ import { useState, useContext, useEffect, useMemo } from "react";
 
 export default function TodoList() {
   const { tasks, setTasks } = useContext(tasksContext);
+  const { showHideToast } = useToast();
   const [displayedTasksType, setDisplayedTasksType] = useState("all");
   const [taskInput, setTaskInput] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -92,6 +94,7 @@ export default function TodoList() {
 
     // Clear text field after addition
     setTaskInput("");
+    showHideToast("Task added successfully!");
   }
 
   function displayDeleteDialog(task) {
@@ -111,6 +114,7 @@ export default function TodoList() {
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
     setShowDeleteDialog(false);
+    showHideToast("Task deleted successfully!");
   }
 
   function displayUpdateDialog(task) {
@@ -136,6 +140,7 @@ export default function TodoList() {
 
     // Close update dialog after confirmation
     setShowUpdateDialog(false);
+    showHideToast("Task updated successfully!");
   }
 
   return (

@@ -9,12 +9,14 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 
 // Components
 import { tasksContext } from "../contexts/tasksContext";
+import { useToast } from "../contexts/ToastContext";
 
 // Others
 import { useContext } from "react";
 
 export default function Task({ task, showDelete, showUpdate }) {
   const { tasks, setTasks } = useContext(tasksContext);
+  const { showHideToast } = useToast();
 
   // Event Handlers
   function handleCheckedButton() {
@@ -27,6 +29,7 @@ export default function Task({ task, showDelete, showUpdate }) {
 
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    showHideToast("Task updated successfully!");
   }
 
   function handleDeleteDialog() {
