@@ -46,6 +46,7 @@ export default function reducer(currentTasks, action) {
       return updatedTasks;
     }
     case "get": {
+      // Get tasks from local storage
       const storageTasks = JSON.parse(localStorage.getItem("tasks"));
       //   setTasks(storageTasks || []);
       return storageTasks;
@@ -53,7 +54,7 @@ export default function reducer(currentTasks, action) {
     case "toggleCheckBtn": {
       const updatedTasks = currentTasks.map((t) => {
         if (t.id === action.payload.id) {
-          //t.isCompleted = !t.isCompleted; mutation, not allowed!
+          //t.isCompleted = !t.isCompleted; //mutation, not allowed!
           const updatedTask = { ...t, isCompleted: !t.isCompleted };
           return updatedTask;
         }

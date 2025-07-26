@@ -388,7 +388,12 @@ export default function TodoList() {
                 letterSpacing: "-0.02em",
               }}
             >
-              Sun, July 13th, 2025
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
             </Typography>
 
             {/* All Tasks */}
@@ -410,7 +415,7 @@ export default function TodoList() {
                     lineHeight: 1,
                   }}
                 >
-                  0
+                  {tasks.length}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -438,7 +443,7 @@ export default function TodoList() {
                     lineHeight: 1,
                   }}
                 >
-                  0
+                  {completedTasks.length}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -478,8 +483,20 @@ export default function TodoList() {
                         background: `conic-gradient(
                   from 0deg, 
                   #667eea 0deg, 
-                  #667eea 90deg, 
-                  rgba(102, 126, 234, 0.2) 180deg, 
+                  #667eea ${
+                    tasks.length === 0
+                      ? 0
+                      : Math.round(
+                          (completedTasks.length / tasks.length) * 100 * 3.6
+                        )
+                  }deg, 
+                  rgba(102, 126, 234, 0.2) ${
+                    tasks.length === 0
+                      ? 0
+                      : Math.round(
+                          (completedTasks.length / tasks.length) * 100 * 3.6
+                        )
+                  }deg, 
                   rgba(102, 126, 234, 0.2) 360deg
                 )`,
                         display: "flex",
@@ -508,7 +525,12 @@ export default function TodoList() {
                             fontSize: "0.8rem",
                           }}
                         >
-                          50%
+                          {tasks.length === 0
+                            ? 0
+                            : Math.round(
+                                (completedTasks.length / tasks.length) * 100
+                              )}
+                          %
                         </Typography>
                       </Box>
                     </Box>
@@ -521,7 +543,12 @@ export default function TodoList() {
                       fontWeight: "400",
                     }}
                   >
-                    50% done
+                    {tasks.length === 0
+                      ? 0
+                      : Math.round(
+                          (completedTasks.length / tasks.length) * 100
+                        )}
+                    % done
                   </Typography>
                 </Box>
               </Box>

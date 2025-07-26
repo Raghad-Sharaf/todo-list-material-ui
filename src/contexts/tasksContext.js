@@ -20,7 +20,7 @@ export const useTasks = () => {
   return useContext(TasksContext);
 };
 
-// Define custom Hook to use Tasks context
+// Define custom Hook to use Dispatch context
 export const useTasksDispatch = () => {
   return useContext(DispatchContext);
 };
