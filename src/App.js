@@ -2,8 +2,8 @@ import "./App.css";
 import TodoList from "./components/TodoList";
 import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@mui/material/styles";
-import { tasksContext } from "./contexts/tasksContext";
 import { ToastProvider } from "./contexts/ToastContext";
+import TasksProvider from "./contexts/tasksContext";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -90,13 +90,13 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <ToastProvider>
-          <div className="App">
-            <tasksContext.Provider value={{ tasks, setTasks }}>
+        <TasksProvider>
+          <ToastProvider>
+            <div className="App">
               <TodoList />
-            </tasksContext.Provider>
-          </div>
-        </ToastProvider>
+            </div>
+          </ToastProvider>
+        </TasksProvider>
       </ThemeProvider>
     </>
   );

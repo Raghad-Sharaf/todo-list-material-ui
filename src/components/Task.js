@@ -8,27 +8,19 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 
 // Components
-import { tasksContext } from "../contexts/tasksContext";
+import { useTasksDispatch } from "../contexts/tasksContext";
 import { useToast } from "../contexts/ToastContext";
 
-// Others
-import { useContext } from "react";
-
 export default function Task({ task, showDelete, showUpdate }) {
-  const { tasks, setTasks } = useContext(tasksContext);
+  const dispatch = useTasksDispatch();
   const { showHideToast } = useToast();
 
   // Event Handlers
   function handleCheckedButton() {
-    const updatedTasks = tasks.map((t) => {
-      if (t.id === task.id) {
-        t.isCompleted = !t.isCompleted;
-      }
-      return t;
+    dispatch({
+      type: "toggleCheckBtn",
+      payload: task,
     });
-
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
     showHideToast("Task updated successfully!");
   }
 

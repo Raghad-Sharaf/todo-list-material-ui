@@ -18,15 +18,15 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 // Components
 import Task from "./Task";
-import { tasksContext } from "../contexts/tasksContext";
 import { useToast } from "../contexts/ToastContext";
+import { useTasks, useTasksDispatch } from "../contexts/tasksContext";
 
 // Others
-import { v4 as uuidv4 } from "uuid";
-import { useState, useContext, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export default function TodoList() {
-  const { tasks, setTasks } = useContext(tasksContext);
+  const tasks = useTasks();
+  const dispatch = useTasksDispatch();
   const { showHideToast } = useToast();
   const [displayedTasksType, setDisplayedTasksType] = useState("all");
   const [taskInput, setTaskInput] = useState("");
@@ -69,9 +69,8 @@ export default function TodoList() {
 
   // Get tasks from local storage when component is loaded for the first time
   useEffect(() => {
-    const storageTasks = JSON.parse(localStorage.getItem("tasks"));
-    setTasks(storageTasks || []);
-  }, [setTasks]);
+    dispatch({ type: "get" });
+  }, []);
 
   // Event Handlers
   function changeTasksDisplayedType(e) {
@@ -79,18 +78,12 @@ export default function TodoList() {
   }
 
   function handleAddTask() {
-    const newTask = {
-      id: uuidv4(),
-      title: taskInput.trim(),
-      details: "",
-      isCompleted: false,
-    };
-
-    const updatedTasks = [...tasks, newTask];
-    setTasks(updatedTasks);
-
-    // Save tasks to local storage
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    dispatch({
+      type: "add",
+      payload: {
+        title: taskInput.trim(),
+      },
+    });
 
     // Clear text field after addition
     setTaskInput("");
@@ -107,12 +100,9 @@ export default function TodoList() {
   }
 
   function handleDeleteConfirm() {
-    const updatedTasks = tasks.filter((t) => {
-      return t.id !== dialogTask.id;
-    });
+    dispatch({ type: "delete", payload: dialogTask });
 
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    // Close delete dialog after confirmation
     setShowDeleteDialog(false);
     showHideToast("Task deleted successfully!");
   }
@@ -127,16 +117,7 @@ export default function TodoList() {
   }
 
   function handleUpdateConfirm() {
-    const updatedTasks = tasks.map((t) => {
-      if (t.id === dialogTask.id) {
-        return { ...t, title: dialogTask.title, details: dialogTask.details };
-      } else {
-        return t;
-      }
-    });
-
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    dispatch({ type: "update", payload: dialogTask });
 
     // Close update dialog after confirmation
     setShowUpdateDialog(false);
