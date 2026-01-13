@@ -49,7 +49,7 @@ export default function reducer(currentTasks, action) {
       // Get tasks from local storage
       const storageTasks = JSON.parse(localStorage.getItem("tasks"));
       //   setTasks(storageTasks || []);
-      return storageTasks;
+      return storageTasks || [];
     }
     case "toggleCheckBtn": {
       const updatedTasks = currentTasks.map((t) => {

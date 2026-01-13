@@ -70,7 +70,7 @@ export default function TodoList() {
   // Get tasks from local storage when component is loaded for the first time
   useEffect(() => {
     dispatch({ type: "get" });
-  }, []);
+  }, [dispatch]);
 
   // Event Handlers
   function changeTasksDisplayedType(e) {
